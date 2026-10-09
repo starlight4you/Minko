@@ -26,6 +26,8 @@ import mihon.icons.simpleicons.SimpleIcons
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 
 @Composable
 fun ExtensionStoresContent(
@@ -38,11 +40,13 @@ fun ExtensionStoresContent(
     onClickDelete: (ExtensionStore) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val paged = LocalEInkPagedScrolling.current
     LazyColumn(
         state = lazyListState,
         contentPadding = paddingValues,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.padding.small),
-        modifier = modifier,
+        modifier = modifier.eInkPagedListScroll(lazyListState),
+        userScrollEnabled = !paged,
     ) {
         repos.forEach {
             item {

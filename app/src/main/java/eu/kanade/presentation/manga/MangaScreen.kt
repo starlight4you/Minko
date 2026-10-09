@@ -73,6 +73,8 @@ import tachiyomi.presentation.core.components.VerticalFastScroller
 import tachiyomi.presentation.core.components.material.PullRefresh
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 import tachiyomi.presentation.core.util.shouldExpandFAB
 import tachiyomi.source.local.isLocal
 import kotlin.time.Instant
@@ -258,6 +260,7 @@ private fun MangaScreenSmallImpl(
     onInvertSelection: () -> Unit,
 ) {
     val chapterListState = rememberLazyListState()
+    val paged = LocalEInkPagedScrolling.current
 
     val (chapters, listItem, isAnySelected) = remember(state) {
         Triple(
@@ -362,8 +365,11 @@ private fun MangaScreenSmallImpl(
                 endContentPadding = contentPadding.calculateEndPadding(layoutDirection),
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxHeight(),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .eInkPagedListScroll(chapterListState),
                     state = chapterListState,
+                    userScrollEnabled = !paged,
                     contentPadding = PaddingValues(
                         start = contentPadding.calculateStartPadding(layoutDirection),
                         end = contentPadding.calculateEndPadding(layoutDirection),
@@ -514,6 +520,7 @@ fun MangaScreenLargeImpl(
     var topBarHeight by remember { mutableIntStateOf(0) }
 
     val chapterListState = rememberLazyListState()
+    val paged = LocalEInkPagedScrolling.current
 
     BackHandler(enabled = isAnySelected) {
         onAllChapterSelected(false)
@@ -648,8 +655,11 @@ fun MangaScreenLargeImpl(
                         topContentPadding = contentPadding.calculateTopPadding(),
                     ) {
                         LazyColumn(
-                            modifier = Modifier.fillMaxHeight(),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .eInkPagedListScroll(chapterListState),
                             state = chapterListState,
+                            userScrollEnabled = !paged,
                             contentPadding = PaddingValues(
                                 top = contentPadding.calculateTopPadding(),
                                 bottom = contentPadding.calculateBottomPadding(),

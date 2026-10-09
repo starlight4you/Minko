@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderSettingsViewModel
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
+import eu.kanade.tachiyomi.util.system.IReaderPageEffect
 import eu.kanade.tachiyomi.util.system.hasDisplayCutout
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.CheckboxItem
@@ -30,6 +31,12 @@ private val flashColors = listOf(
     MR.strings.pref_flash_style_black to ReaderPreferences.FlashColor.BLACK,
     MR.strings.pref_flash_style_white to ReaderPreferences.FlashColor.WHITE,
     MR.strings.pref_flash_style_white_black to ReaderPreferences.FlashColor.WHITE_BLACK,
+)
+
+private val rippleSpeeds = listOf(
+    MR.strings.page_effect_speed_slow to ReaderPreferences.PageEffectSpeed.SLOW,
+    MR.strings.page_effect_speed_standard to ReaderPreferences.PageEffectSpeed.STANDARD,
+    MR.strings.page_effect_speed_fast to ReaderPreferences.PageEffectSpeed.FAST,
 )
 
 @Composable
@@ -131,6 +138,29 @@ internal fun ColumnScope.GeneralPage(viewModel: ReaderSettingsViewModel) {
         label = stringResource(MR.strings.pref_page_transitions),
         pref = viewModel.preferences.pageTransitions,
     )
+
+    if (IReaderPageEffect.isAvailable) {
+        CheckboxItem(
+            label = stringResource(MR.strings.pref_page_effect_ripple),
+            pref = viewModel.preferences.pageEffectRipple,
+        )
+
+        val rippleEnabled by viewModel.preferences.pageEffectRipple.collectAsState()
+        if (rippleEnabled) {
+            val rippleSpeedPref = viewModel.preferences.pageEffectRippleSpeed
+            val rippleSpeed by rippleSpeedPref.collectAsState()
+
+            SettingsChipRow(MR.strings.pref_page_effect_speed) {
+                rippleSpeeds.map { (labelRes, value) ->
+                    FilterChip(
+                        selected = rippleSpeed == value,
+                        onClick = { rippleSpeedPref.set(value) },
+                        label = { Text(stringResource(labelRes)) },
+                    )
+                }
+            }
+        }
+    }
 
     CheckboxItem(
         label = stringResource(MR.strings.pref_flash_page),

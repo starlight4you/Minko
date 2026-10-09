@@ -52,6 +52,18 @@ class WebtoonRecyclerView @JvmOverloads constructor(
     var tapListener: ((MotionEvent) -> Unit)? = null
     var longTapListener: ((MotionEvent) -> Boolean)? = null
 
+    /**
+     * E-ink paged mode: touch drags never scroll the recycler; a vertical swipe beyond
+     * the threshold flips exactly one page via [pageTurnListener] (true = forward).
+     */
+    var pagedMode = false
+
+    var pageTurnListener: ((Boolean) -> Unit)? = null
+
+    private var swipePointerId = -1
+    private var swipeStartY = 0
+    private var swipeConsumed = false
+
     private var isManuallyScrolling = false
     private var tapDuringManualScroll = false
 
@@ -71,7 +83,39 @@ class WebtoonRecyclerView @JvmOverloads constructor(
         }
 
         detector.onTouchEvent(e)
+
+        // In paged mode the recycler is never scrolled by touch; a swipe becomes a
+        // single page turn instead. Zoomed panning keeps the original behavior.
+        if (pagedMode && currentScale <= DEFAULT_RATE) {
+            return handlePagedTouch(e)
+        }
         return super.onTouchEvent(e)
+    }
+
+    private fun handlePagedTouch(e: MotionEvent): Boolean {
+        when (e.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                swipePointerId = e.getPointerId(0)
+                swipeStartY = (e.y + 0.5f).toInt()
+                swipeConsumed = false
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (swipeConsumed) return true
+                val index = e.findPointerIndex(swipePointerId)
+                if (index < 0) return true
+                val dy = (e.getY(index) + 0.5f).toInt() - swipeStartY
+                if (abs(dy) > halfHeight / 4) {
+                    swipeConsumed = true
+                    // Swiping up moves towards the next page
+                    pageTurnListener?.invoke(dy < 0)
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                swipePointerId = -1
+                swipeConsumed = false
+            }
+        }
+        return true
     }
 
     override fun onScrolled(dx: Int, dy: Int) {

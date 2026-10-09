@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Mihon</string>
+    <string name="app_name" translatable="false">Minko</string>
 
     <!-- Generic strings -->
     <string name="on">On</string>
@@ -420,6 +420,16 @@
     <string name="pref_flash_style_black">Black</string>
     <string name="pref_flash_style_white">White</string>
     <string name="pref_flash_style_white_black">White and Black</string>
+    <string name="pref_page_effect_ripple">iReader water-ripple page turn</string>
+    <string name="pref_page_effect_ripple_summ">Use the SmartOS firmware water-ripple refresh on page turns</string>
+    <string name="pref_page_effect_speed">Water-ripple speed</string>
+    <string name="page_effect_speed_slow">Slow</string>
+    <string name="page_effect_speed_standard">Standard</string>
+    <string name="page_effect_speed_fast">Fast</string>
+    <string name="pref_webtoon_paged_mode">Paged mode</string>
+    <string name="pref_webtoon_paged_mode_summ">Turn a full screen at a time with no scrolling animation (e-ink friendly)</string>
+    <string name="pref_eink_paged_scrolling">Paged scrolling everywhere</string>
+    <string name="pref_eink_paged_scrolling_summ">All lists turn a full page per swipe instead of scrolling smoothly</string>
     <string name="pref_double_tap_anim_speed">Double tap animation speed</string>
     <string name="pref_show_page_number">Show page number</string>
     <string name="pref_vertical_navigator">Use vertical chapter navigator in</string>

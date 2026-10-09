@@ -47,6 +47,8 @@ import mihon.icons.materialsymbols.rounded.Sync
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 import cafe.adriel.voyager.core.screen.Screen as VoyagerScreen
 
 object SettingsMainScreen : Screen() {
@@ -102,6 +104,7 @@ object SettingsMainScreen : Screen() {
             containerColor = containerColor,
             content = { contentPadding ->
                 val state = rememberLazyListState()
+                val paged = LocalEInkPagedScrolling.current
                 val indexSelected = if (twoPane) {
                     items.indexOfFirst { it.screen::class == navigator.items.first()::class }
                         .also {
@@ -118,7 +121,9 @@ object SettingsMainScreen : Screen() {
                 }
 
                 LazyColumn(
+                    modifier = Modifier.eInkPagedListScroll(state),
                     state = state,
+                    userScrollEnabled = !paged,
                     contentPadding = contentPadding,
                 ) {
                     itemsIndexed(

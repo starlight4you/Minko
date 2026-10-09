@@ -2,9 +2,11 @@ package eu.kanade.presentation.browse.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -13,6 +15,8 @@ import eu.kanade.presentation.library.components.MangaListItem
 import kotlinx.coroutines.flow.StateFlow
 import tachiyomi.domain.manga.model.Manga
 import tachiyomi.domain.manga.model.MangaCover
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 import tachiyomi.presentation.core.util.plus
 
 @Composable
@@ -22,7 +26,12 @@ fun BrowseSourceList(
     onMangaClick: (Manga) -> Unit,
     onMangaLongClick: (Manga) -> Unit,
 ) {
+    val listState = rememberLazyListState()
+    val paged = LocalEInkPagedScrolling.current
     LazyColumn(
+        modifier = Modifier.eInkPagedListScroll(listState),
+        state = listState,
+        userScrollEnabled = !paged,
         contentPadding = contentPadding + PaddingValues(vertical = 8.dp),
     ) {
         item {

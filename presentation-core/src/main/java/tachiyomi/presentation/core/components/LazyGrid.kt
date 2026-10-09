@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedGridScroll
 
 @Composable
 fun FastScrollLazyVerticalGrid(
@@ -44,14 +46,16 @@ fun FastScrollLazyVerticalGrid(
         bottomContentPadding = bottomContentPadding,
         endContentPadding = endContentPadding,
     ) {
+        val paged = LocalEInkPagedScrolling.current
         LazyVerticalGrid(
             columns = columns,
+            modifier = Modifier.eInkPagedGridScroll(state),
             state = state,
             contentPadding = contentPadding,
             reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
             horizontalArrangement = horizontalArrangement,
-            userScrollEnabled = userScrollEnabled,
+            userScrollEnabled = userScrollEnabled && !paged,
             content = content,
         )
     }

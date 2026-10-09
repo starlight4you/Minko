@@ -5,6 +5,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import eu.kanade.domain.ui.model.AppTheme
@@ -25,6 +27,8 @@ import eu.kanade.presentation.theme.colorscheme.TokyoNightColorScheme
 import eu.kanade.presentation.theme.colorscheme.YinYangColorScheme
 import eu.kanade.presentation.theme.colorscheme.YotsubaColorScheme
 import mihon.app.di.appGraph
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.collectAsState
 
 @Composable
 fun TachiyomiTheme(
@@ -34,11 +38,14 @@ fun TachiyomiTheme(
 ) {
     val context = LocalContext.current
     val uiPreferences = remember { context.appGraph.uiPreferences }
-    BaseTachiyomiTheme(
-        appTheme = appTheme ?: uiPreferences.appTheme.get(),
-        isAmoled = amoled ?: uiPreferences.themeDarkAmoled.get(),
-        content = content,
-    )
+    val pagedScrolling by uiPreferences.einkPagedScrolling.collectAsState()
+    CompositionLocalProvider(LocalEInkPagedScrolling provides pagedScrolling) {
+        BaseTachiyomiTheme(
+            appTheme = appTheme ?: uiPreferences.appTheme.get(),
+            isAmoled = amoled ?: uiPreferences.themeDarkAmoled.get(),
+            content = content,
+        )
+    }
 }
 
 @Composable

@@ -10,6 +10,7 @@ import eu.kanade.presentation.more.settings.Preference
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderOrientation
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import eu.kanade.tachiyomi.ui.reader.setting.ReadingMode
+import eu.kanade.tachiyomi.util.system.IReaderPageEffect
 import eu.kanade.tachiyomi.util.system.hasDisplayCutout
 import mihon.app.di.appGraph
 import tachiyomi.i18n.MR
@@ -115,12 +116,32 @@ object SettingsReaderScreen : SearchableSettings {
     @Composable
     private fun getEInkGroup(readerPreferences: ReaderPreferences): Preference.PreferenceGroup {
         val flashPageState by readerPreferences.flashOnPageChange.collectAsState()
+        val rippleEnabled by readerPreferences.pageEffectRipple.collectAsState()
 
         val flashColorPref = readerPreferences.flashColor
+        val uiPreferences = LocalContext.current.appGraph.uiPreferences
 
         return Preference.PreferenceGroup(
             title = "E-Ink",
             preferenceItems = listOf(
+                Preference.PreferenceItem.SwitchPreference(
+                    preference = uiPreferences.einkPagedScrolling,
+                    title = stringResource(MR.strings.pref_eink_paged_scrolling),
+                    subtitle = stringResource(MR.strings.pref_eink_paged_scrolling_summ),
+                ),
+                Preference.PreferenceItem.SwitchPreference(
+                    preference = readerPreferences.pageEffectRipple,
+                    title = stringResource(MR.strings.pref_page_effect_ripple),
+                    subtitle = stringResource(MR.strings.pref_page_effect_ripple_summ),
+                    visible = IReaderPageEffect.isAvailable,
+                ),
+                Preference.PreferenceItem.ListPreference(
+                    preference = readerPreferences.pageEffectRippleSpeed,
+                    entries = ReaderPreferences.PageEffectSpeed.entries
+                        .associateWith { stringResource(it.titleRes) },
+                    title = stringResource(MR.strings.pref_page_effect_speed),
+                    visible = IReaderPageEffect.isAvailable && rippleEnabled,
+                ),
                 Preference.PreferenceItem.SwitchPreference(
                     preference = readerPreferences.flashOnPageChange,
                     title = stringResource(MR.strings.pref_flash_page),
@@ -359,6 +380,11 @@ object SettingsReaderScreen : SearchableSettings {
                 Preference.PreferenceItem.SwitchPreference(
                     preference = readerPreferences.webtoonDoubleTapZoomEnabled,
                     title = stringResource(MR.strings.pref_double_tap_zoom),
+                ),
+                Preference.PreferenceItem.SwitchPreference(
+                    preference = readerPreferences.webtoonPagedMode,
+                    title = stringResource(MR.strings.pref_webtoon_paged_mode),
+                    subtitle = stringResource(MR.strings.pref_webtoon_paged_mode_summ),
                 ),
                 Preference.PreferenceItem.SwitchPreference(
                     preference = readerPreferences.webtoonDisableZoomOut,

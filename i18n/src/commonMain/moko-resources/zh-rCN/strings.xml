@@ -771,6 +771,16 @@
     <string name="pref_flash_with">闪烁于</string>
     <string name="pref_flash_style_white">白</string>
     <string name="pref_flash_style_white_black">黑白</string>
+    <string name="pref_page_effect_ripple">掌阅水波纹翻页</string>
+    <string name="pref_page_effect_ripple_summ">翻页时使用 SmartOS 固件的水波纹刷新效果</string>
+    <string name="pref_page_effect_speed">水波纹速度</string>
+    <string name="page_effect_speed_slow">慢</string>
+    <string name="page_effect_speed_standard">标准</string>
+    <string name="page_effect_speed_fast">快</string>
+    <string name="pref_webtoon_paged_mode">整页翻页模式</string>
+    <string name="pref_webtoon_paged_mode_summ">每次翻动一整屏，无滚动动画（适合墨水屏）</string>
+    <string name="pref_eink_paged_scrolling">全局整页翻页</string>
+    <string name="pref_eink_paged_scrolling_summ">所有列表页每次滑动翻动一整屏，不再平滑滚动</string>
     <string name="file_picker_uri_permission_unsupported">获取永久文件存储权限失败，应用程序可能会出现异常。</string>
     <string name="pref_flash_page_interval">闪烁时间间隔</string>
     <string name="invalid_backup_file_json">不支持 JSON 备份</string>

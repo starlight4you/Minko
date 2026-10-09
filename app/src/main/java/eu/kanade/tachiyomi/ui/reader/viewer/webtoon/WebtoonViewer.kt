@@ -17,6 +17,7 @@ import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.viewer.Viewer
 import eu.kanade.tachiyomi.ui.reader.viewer.ViewerNavigation.NavigationRegion
+import eu.kanade.tachiyomi.util.system.IReaderPageEffect
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import mihon.app.di.appGraph
@@ -47,8 +48,9 @@ class WebtoonViewer(val activity: ReaderActivity, val isContinuous: Boolean = tr
 
     /**
      * Distance to scroll when the user taps on one side of the recycler view.
+     * A full screen so that every turn flips a complete page (e-ink friendly).
      */
-    private val scrollDistance = activity.resources.displayMetrics.heightPixels * 3 / 4
+    private val scrollDistance = activity.resources.displayMetrics.heightPixels
 
     /**
      * Layout manager of the recycler view.
@@ -133,6 +135,14 @@ class WebtoonViewer(val activity: ReaderActivity, val isContinuous: Boolean = tr
                 }
             }
             false
+        }
+
+        recycler.pageTurnListener = { forward ->
+            if (forward) scrollDown() else scrollUp()
+        }
+
+        config.pagedModeChangedListener = {
+            recycler.pagedMode = it
         }
 
         config.imagePropertyChangedListener = {
@@ -274,25 +284,29 @@ class WebtoonViewer(val activity: ReaderActivity, val isContinuous: Boolean = tr
     }
 
     /**
-     * Scrolls up by [scrollDistance].
+     * Scrolls up by [scrollDistance]. Always instant: e-ink panels must not see a
+     * scrolling animation.
      */
     private fun scrollUp() {
-        if (config.usePageTransitions) {
-            recycler.smoothScrollBy(0, -scrollDistance)
-        } else {
-            recycler.scrollBy(0, -scrollDistance)
-        }
+        applyPageEffect(forward = false)
+        recycler.scrollBy(0, -scrollDistance)
     }
 
     /**
-     * Scrolls down by [scrollDistance].
+     * Scrolls down by [scrollDistance]. Always instant: e-ink panels must not see a
+     * scrolling animation.
      */
     private fun scrollDown() {
-        if (config.usePageTransitions) {
-            recycler.smoothScrollBy(0, scrollDistance)
-        } else {
-            recycler.scrollBy(0, scrollDistance)
-        }
+        applyPageEffect(forward = true)
+        recycler.scrollBy(0, scrollDistance)
+    }
+
+    /**
+     * Arms the iReader water-ripple refresh for the frame this page turn is about to post.
+     */
+    private fun applyPageEffect(forward: Boolean) {
+        if (!config.pageEffectEnabled) return
+        IReaderPageEffect.onPageTurn(activity, forward, config.pageEffectSpeedFlag)
     }
 
     /**

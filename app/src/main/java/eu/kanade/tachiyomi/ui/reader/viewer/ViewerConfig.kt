@@ -30,6 +30,9 @@ abstract class ViewerConfig(readerPreferences: ReaderPreferences, private val sc
 
     var navigationOverlayOnStart = false
 
+    var pageEffectEnabled = false
+    var pageEffectSpeedFlag = 64
+
     var dualPageSplit = false
         protected set
 
@@ -63,6 +66,12 @@ abstract class ViewerConfig(readerPreferences: ReaderPreferences, private val sc
 
         readerPreferences.alwaysShowChapterTransition
             .register({ alwaysShowChapterTransition = it })
+
+        readerPreferences.pageEffectRipple
+            .register({ pageEffectEnabled = it })
+
+        readerPreferences.pageEffectRippleSpeed
+            .register({ pageEffectSpeedFlag = it.speedFlag })
 
         forceNavigationOverlay = readerPreferences.showNavigationOverlayNewUser.get()
         if (forceNavigationOverlay) {

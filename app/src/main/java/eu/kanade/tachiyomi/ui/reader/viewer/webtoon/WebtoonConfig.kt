@@ -40,6 +40,11 @@ class WebtoonConfig(
 
     var doubleTapZoomChangedListener: ((Boolean) -> Unit)? = null
 
+    var pagedMode = true
+        private set
+
+    var pagedModeChangedListener: ((Boolean) -> Unit)? = null
+
     val theme = readerPreferences.readerTheme.get()
 
     init {
@@ -87,6 +92,12 @@ class WebtoonConfig(
             .register(
                 { doubleTapZoom = it },
                 { doubleTapZoomChangedListener?.invoke(it) },
+            )
+
+        readerPreferences.webtoonPagedMode
+            .register(
+                { pagedMode = it },
+                { pagedModeChangedListener?.invoke(it) },
             )
 
         readerPreferences.readerTheme.changes()

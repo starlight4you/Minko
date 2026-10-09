@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -15,6 +16,8 @@ import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.screens.EmptyScreen
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 
 @Composable
 fun ExtensionFilterScreen(
@@ -53,7 +56,12 @@ private fun ExtensionFilterContent(
     onClickLang: (String) -> Unit,
 ) {
     val context = LocalContext.current
+    val listState = rememberLazyListState()
+    val paged = LocalEInkPagedScrolling.current
     LazyColumn(
+        modifier = Modifier.eInkPagedListScroll(listState),
+        state = listState,
+        userScrollEnabled = !paged,
         contentPadding = contentPadding,
     ) {
         items(state.languages) { language ->

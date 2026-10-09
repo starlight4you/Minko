@@ -20,7 +20,7 @@ class ReaderPreferences(
 
     // region General
 
-    val pageTransitions: Preference<Boolean> = preferenceStore.getBoolean("pref_enable_transitions_key", true)
+    val pageTransitions: Preference<Boolean> = preferenceStore.getBoolean("pref_enable_transitions_key", false)
 
     val flashOnPageChange: Preference<Boolean> = preferenceStore.getBoolean("pref_reader_flash", false)
 
@@ -29,6 +29,13 @@ class ReaderPreferences(
     val flashPageInterval: Preference<Int> = preferenceStore.getInt("pref_reader_flash_interval", 1)
 
     val flashColor: Preference<FlashColor> = preferenceStore.getEnum("pref_reader_flash_mode", FlashColor.BLACK)
+
+    val pageEffectRipple: Preference<Boolean> = preferenceStore.getBoolean("pref_reader_page_effect_ripple", true)
+
+    val pageEffectRippleSpeed: Preference<PageEffectSpeed> = preferenceStore.getEnum(
+        "pref_reader_page_effect_speed",
+        PageEffectSpeed.STANDARD,
+    )
 
     val doubleTapAnimSpeed: Preference<Int> = preferenceStore.getInt("pref_double_tap_anim_speed", 500)
 
@@ -76,7 +83,7 @@ class ReaderPreferences(
 
     val zoomStart: Preference<Int> = preferenceStore.getInt("pref_zoom_start_key", 1)
 
-    val readerTheme: Preference<Int> = preferenceStore.getInt("pref_reader_theme_key", 1)
+    val readerTheme: Preference<Int> = preferenceStore.getInt("pref_reader_theme_key", 0)
 
     val alwaysShowChapterTransition: Preference<Boolean> = preferenceStore.getBoolean(
         "always_show_chapter_transition",
@@ -107,6 +114,8 @@ class ReaderPreferences(
     val skipDupe: Preference<Boolean> = preferenceStore.getBoolean("skip_dupe", false)
 
     val webtoonDisableZoomOut: Preference<Boolean> = preferenceStore.getBoolean("webtoon_disable_zoom_out", false)
+
+    val webtoonPagedMode: Preference<Boolean> = preferenceStore.getBoolean("webtoon_paged_mode", true)
 
     // endregion
 
@@ -166,7 +175,7 @@ class ReaderPreferences(
 
     val readWithLongTap: Preference<Boolean> = preferenceStore.getBoolean("reader_long_tap", true)
 
-    val readWithVolumeKeys: Preference<Boolean> = preferenceStore.getBoolean("reader_volume_keys", false)
+    val readWithVolumeKeys: Preference<Boolean> = preferenceStore.getBoolean("reader_volume_keys", true)
 
     val readWithVolumeKeysInverted: Preference<Boolean> = preferenceStore.getBoolean(
         "reader_volume_keys_inverted",
@@ -221,6 +230,12 @@ class ReaderPreferences(
         BLACK,
         WHITE,
         WHITE_BLACK,
+    }
+
+    enum class PageEffectSpeed(val titleRes: StringResource, val speedFlag: Int) {
+        SLOW(MR.strings.page_effect_speed_slow, 128),
+        STANDARD(MR.strings.page_effect_speed_standard, 64),
+        FAST(MR.strings.page_effect_speed_fast, 0),
     }
 
     enum class TappingInvertMode(

@@ -54,6 +54,8 @@ import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.screens.EmptyScreen
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 import tachiyomi.presentation.core.util.runOnEnterKeyPressed
 import cafe.adriel.voyager.core.screen.Screen as VoyagerScreen
 
@@ -222,9 +224,13 @@ private fun SearchResult(
                 EmptyScreen(stringResource(MR.strings.no_results_found))
             }
             else -> {
+                val paged = LocalEInkPagedScrolling.current
                 LazyColumn(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = modifier
+                        .fillMaxSize()
+                        .eInkPagedListScroll(listState),
                     state = listState,
+                    userScrollEnabled = !paged,
                     contentPadding = contentPadding,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {

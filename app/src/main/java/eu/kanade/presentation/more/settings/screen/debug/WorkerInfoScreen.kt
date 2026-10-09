@@ -5,6 +5,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,6 +46,8 @@ import mihon.icons.materialsymbols.rounded.ContentCopy
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 import tachiyomi.presentation.core.util.plus
 import kotlin.time.Instant
 
@@ -86,9 +89,15 @@ class WorkerInfoScreen : Screen() {
                 )
             },
         ) { contentPadding ->
+            val listState = rememberLazyListState()
+            val paged = LocalEInkPagedScrolling.current
             LazyColumn(
                 contentPadding = contentPadding + PaddingValues(horizontal = 16.dp),
-                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .eInkPagedListScroll(listState),
+                state = listState,
+                userScrollEnabled = !paged,
             ) {
                 item { SectionTitle(title = "Enqueued") }
                 item { SectionText(text = enqueued) }

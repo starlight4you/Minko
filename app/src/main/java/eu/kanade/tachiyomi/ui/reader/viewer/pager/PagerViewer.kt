@@ -18,6 +18,7 @@ import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
 import eu.kanade.tachiyomi.ui.reader.model.ViewerChapters
 import eu.kanade.tachiyomi.ui.reader.viewer.Viewer
 import eu.kanade.tachiyomi.ui.reader.viewer.ViewerNavigation.NavigationRegion
+import eu.kanade.tachiyomi.util.system.IReaderPageEffect
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import mihon.app.di.appGraph
@@ -317,6 +318,7 @@ abstract class PagerViewer(val activity: ReaderActivity) : Viewer {
      * Moves to the next page.
      */
     open fun moveToNext() {
+        applyPageEffect(forward = true)
         moveRight()
     }
 
@@ -324,7 +326,16 @@ abstract class PagerViewer(val activity: ReaderActivity) : Viewer {
      * Moves to the previous page.
      */
     open fun moveToPrevious() {
+        applyPageEffect(forward = false)
         moveLeft()
+    }
+
+    /**
+     * Arms the iReader water-ripple refresh for the frame this page turn is about to post.
+     */
+    protected fun applyPageEffect(forward: Boolean) {
+        if (!config.pageEffectEnabled) return
+        IReaderPageEffect.onPageTurn(activity, forward, config.pageEffectSpeedFlag)
     }
 
     /**

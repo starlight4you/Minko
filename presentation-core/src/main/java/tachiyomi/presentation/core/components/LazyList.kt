@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
+import tachiyomi.presentation.core.util.LocalEInkPagedScrolling
 import tachiyomi.presentation.core.util.drawVerticalScrollbar
+import tachiyomi.presentation.core.util.eInkPagedListScroll
 
 /**
  * LazyColumn with scrollbar.
@@ -36,8 +38,10 @@ fun ScrollbarLazyColumn(
     val positionOffset = remember(contentPadding) {
         with(density) { contentPadding.calculateEndPadding(direction).toPx() }
     }
+    val paged = LocalEInkPagedScrolling.current
     LazyColumn(
         modifier = modifier
+            .eInkPagedListScroll(state)
             .drawVerticalScrollbar(
                 state = state,
                 reverseScrolling = reverseLayout,
@@ -48,7 +52,7 @@ fun ScrollbarLazyColumn(
         reverseLayout = reverseLayout,
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment,
-        userScrollEnabled = userScrollEnabled,
+        userScrollEnabled = userScrollEnabled && !paged,
         content = content,
     )
 }
@@ -74,13 +78,15 @@ fun FastScrollLazyColumn(
         topContentPadding = contentPadding.calculateTopPadding(),
         endContentPadding = contentPadding.calculateEndPadding(LocalLayoutDirection.current),
     ) {
+        val paged = LocalEInkPagedScrolling.current
         LazyColumn(
+            modifier = Modifier.eInkPagedListScroll(state),
             state = state,
             contentPadding = contentPadding,
             reverseLayout = reverseLayout,
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
-            userScrollEnabled = userScrollEnabled,
+            userScrollEnabled = userScrollEnabled && !paged,
             content = content,
         )
     }
