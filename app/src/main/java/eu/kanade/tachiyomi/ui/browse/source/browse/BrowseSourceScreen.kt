@@ -33,6 +33,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import eu.kanade.presentation.browse.BrowseSourceContent
 import eu.kanade.presentation.browse.MissingSourceScreen
+import eu.kanade.presentation.browse.components.AddMangaDialog
 import eu.kanade.presentation.browse.components.BrowseSourceToolbar
 import eu.kanade.presentation.browse.components.RemoveMangaDialog
 import eu.kanade.presentation.category.components.ChangeCategoryDialog
@@ -231,7 +232,7 @@ data class BrowseSourceScreen(
                             duplicates.isNotEmpty() -> viewModel.setDialog(
                                 BrowseSourceViewModel.Dialog.AddDuplicateManga(manga, duplicates),
                             )
-                            else -> viewModel.addFavorite(manga)
+                            else -> viewModel.setDialog(BrowseSourceViewModel.Dialog.AddManga(manga))
                         }
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     }
@@ -267,6 +268,15 @@ data class BrowseSourceScreen(
                     // Initiated from the context of [dialog.target] so we show [dialog.current].
                     onClickTitle = { navigator.push(MangaScreen(dialog.current.id)) },
                     onDismissRequest = onDismissRequest,
+                )
+            }
+            is BrowseSourceViewModel.Dialog.AddManga -> {
+                AddMangaDialog(
+                    onDismissRequest = onDismissRequest,
+                    onConfirm = {
+                        viewModel.addFavorite(dialog.manga)
+                    },
+                    mangaToAdd = dialog.manga,
                 )
             }
             is BrowseSourceViewModel.Dialog.RemoveManga -> {

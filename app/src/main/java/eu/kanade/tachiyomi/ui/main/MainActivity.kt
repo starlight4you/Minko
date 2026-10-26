@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -123,6 +124,7 @@ import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.components.material.padding
 import tachiyomi.presentation.core.i18n.stringResource
+import tachiyomi.presentation.core.util.EInkPageKeyDispatcher
 import tachiyomi.presentation.core.util.collectAsState
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -315,6 +317,25 @@ class MainActivity : BaseActivity() {
                 screen.onProvideAssistUrl()?.let { outContent.webUri = it.toUri() }
             }
         }
+    }
+
+    /**
+     * Routes the iReader page-turn buttons (KEYCODE_PAGE_UP/DOWN) to the e-ink paged
+     * list currently on screen. No focused composable consumes these keys, so they
+     * would otherwise be dropped on every Compose screen.
+     */
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            val forward = when (event.keyCode) {
+                KeyEvent.KEYCODE_PAGE_DOWN -> true
+                KeyEvent.KEYCODE_PAGE_UP -> false
+                else -> null
+            }
+            if (forward != null && EInkPageKeyDispatcher.dispatch(forward)) {
+                return true
+            }
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     @Composable

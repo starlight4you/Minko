@@ -4,6 +4,7 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -20,6 +21,27 @@ import kotlin.math.abs
  * "paged scrolling" preference, provided from the app theme.
  */
 val LocalEInkPagedScrolling = compositionLocalOf { true }
+
+/**
+ * Hardware page-up/page-down keys (the iReader page-turn buttons) reach the activity
+ * window, not any focused composable. The currently composed e-ink paged list
+ * registers itself here so the activity can route those keys to it.
+ */
+object EInkPageKeyDispatcher {
+    private var handler: ((Boolean) -> Unit)? = null
+
+    /** Returns true when a paged list consumed the page turn. */
+    fun dispatch(forward: Boolean): Boolean {
+        val current = handler ?: return false
+        current(forward)
+        return true
+    }
+
+    fun register(newHandler: (Boolean) -> Unit): () -> Unit {
+        handler = newHandler
+        return { if (handler === newHandler) handler = null }
+    }
+}
 
 /**
  * Observes vertical swipes and turns them into single, instant full-viewport page
@@ -47,6 +69,15 @@ private fun Modifier.eInkPagedScroll(
     if (!LocalEInkPagedScrolling.current) return@composed Modifier
 
     val scope = rememberCoroutineScope()
+    DisposableEffect(Unit) {
+        val unregister = EInkPageKeyDispatcher.register { forward ->
+            val viewport = viewportHeight().toFloat()
+            if (viewport > 0f) {
+                scope.launch { scrollBy(if (forward) viewport else -viewport) }
+            }
+        }
+        onDispose(unregister)
+    }
     pointerInput(Unit) {
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false)

@@ -134,9 +134,11 @@ internal fun ColumnScope.GeneralPage(viewModel: ReaderSettingsViewModel) {
         pref = viewModel.preferences.alwaysShowChapterTransition,
     )
 
+    val pageTransitions by viewModel.preferences.pageTransitions.collectAsState()
     CheckboxItem(
         label = stringResource(MR.strings.pref_page_transitions),
-        pref = viewModel.preferences.pageTransitions,
+        checked = pageTransitions,
+        onClick = { viewModel.preferences.pageTransitions.set(!pageTransitions) },
     )
 
     if (IReaderPageEffect.isAvailable) {

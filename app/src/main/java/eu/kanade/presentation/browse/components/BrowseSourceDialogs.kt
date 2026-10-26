@@ -9,6 +9,38 @@ import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
 
 @Composable
+fun AddMangaDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit,
+    mangaToAdd: Manga,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = stringResource(MR.strings.action_cancel))
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                    onConfirm()
+                },
+            ) {
+                Text(text = stringResource(MR.strings.action_add))
+            }
+        },
+        title = {
+            Text(text = stringResource(MR.strings.snack_add_to_library))
+        },
+        text = {
+            Text(text = mangaToAdd.title)
+        },
+    )
+}
+
+@Composable
 fun RemoveMangaDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,

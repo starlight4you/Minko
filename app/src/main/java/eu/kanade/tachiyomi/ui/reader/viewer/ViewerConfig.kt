@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.ui.reader.viewer
 
 import eu.kanade.tachiyomi.ui.reader.setting.ReaderPreferences
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -14,11 +15,14 @@ abstract class ViewerConfig(readerPreferences: ReaderPreferences, private val sc
 
     var imagePropertyChangedListener: (() -> Unit)? = null
 
+    var textEnhancementChangedListener: ((Int) -> Unit)? = null
+
     var navigationModeChangedListener: (() -> Unit)? = null
 
     var tappingInverted = ReaderPreferences.TappingInvertMode.NONE
     var longTapEnabled = true
-    var usePageTransitions = false
+    var usePageTransitions = true
+        private set
     var doubleTapAnimDuration = 500
     var volumeKeysEnabled = false
     var volumeKeysInverted = false
@@ -27,6 +31,13 @@ abstract class ViewerConfig(readerPreferences: ReaderPreferences, private val sc
         protected set
 
     var forceNavigationOverlay = false
+
+    var textEnhancement = if (readerPreferences.preprocessingEnabled.get()) {
+        readerPreferences.textEnhancement.get()
+    } else {
+        0
+    }
+        private set
 
     var navigationOverlayOnStart = false
 
@@ -72,6 +83,18 @@ abstract class ViewerConfig(readerPreferences: ReaderPreferences, private val sc
 
         readerPreferences.pageEffectRippleSpeed
             .register({ pageEffectSpeedFlag = it.speedFlag })
+
+        combine(
+            readerPreferences.preprocessingEnabled.changes(),
+            readerPreferences.textEnhancement.changes(),
+        ) { enabled, strength -> if (enabled) strength else 0 }
+            .distinctUntilChanged()
+            .onEach { value ->
+                if (textEnhancement == value) return@onEach
+                textEnhancement = value
+                textEnhancementChangedListener?.invoke(value)
+            }
+            .launchIn(scope)
 
         forceNavigationOverlay = readerPreferences.showNavigationOverlayNewUser.get()
         if (forceNavigationOverlay) {
